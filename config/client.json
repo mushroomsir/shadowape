@@ -1,5 +1,7 @@
 {
-    "http_listen_addr": "0.0.0.0:8010",
-    "socks5_listen_addr": "0.0.0.0:8020",
-    "socks5_Server_addr": "your server addr"
+    "client_config": {
+        "http_listen_addr": "0.0.0.0:8010",
+        "socks5_listen_addr": "0.0.0.0:8020",
+        "socks5_Server_addr": "your server addr"
+    }
 }

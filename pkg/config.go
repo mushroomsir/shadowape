@@ -20,15 +20,15 @@ type ClientConfig struct {
 
 // Config ...
 type Config struct {
-	ClientConfig *ClientConfig `json:"client_config"`
-	ServerConfig *ServerConfig `json:"server_config"`
+	ClientConfig *ClientConfig `json:"client_config,omitempty"`
+	ServerConfig *ServerConfig `json:"server_config,omitempty"`
 }
 
 // ParseConfig parse config both from file or env variable
 func ParseConfig(configPath string) (*Config, error) {
 	config := new(Config)
 	data, err := ioutil.ReadFile(configPath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	if err := json.Unmarshal(data, config); err != nil {

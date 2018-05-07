@@ -1,3 +1,5 @@
 {
-    "server_addr": "0.0.0.0:8060"
+    "server_config": {
+        "server_addr": "0.0.0.0:8060"
+    }
 }

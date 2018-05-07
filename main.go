@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
 	"github.com/mushroomsir/logger/alog"
 	"github.com/mushroomsir/shadowape/pkg"
@@ -16,7 +15,7 @@ func main() {
 	if alog.Check(err) {
 		return
 	}
-	fmt.Println(config)
+	alog.Info(*config)
 	if config.ClientConfig != nil {
 		client, err := pkg.NewClient(config.ClientConfig)
 		if err != nil {
