@@ -57,17 +57,13 @@ func handshake(rw io.ReadWriter) error {
 
 func getAddr(rw io.ReadWriter) (string, error) {
 	const (
-		idVer   = 0
-		idCmd   = 1
-		idType  = 3 // address type index
-		idIP0   = 4 // ip addres start index
-		idDmLen = 4 // domain address length index
-		idDm0   = 5 // domain address start index
-
+		idVer  = 0
+		idCmd  = 1
+		idType = 3 // address type index
 	)
 	// refer to getRequest in server.go for why set buffer size to 263
 	buf := make([]byte, 263)
-	_, err := io.ReadAtLeast(rw, buf, idDmLen+1)
+	n, err := io.ReadAtLeast(rw, buf, 5)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +72,7 @@ func getAddr(rw io.ReadWriter) (string, error) {
 		return "", fmt.Errorf("socks5 read version error: %s", err.Error())
 	}
 	if buf[idCmd] != cmdTCPConnect {
-		return "", fmt.Errorf("socks5 unsupport cmd: %d", buf[1])
+		return "", fmt.Errorf("socks5 unsupport cmd: %d", buf[0:n])
 	}
 	atype := buf[idType]
 	var host string

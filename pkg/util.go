@@ -12,7 +12,6 @@ import (
 	"time"
 
 	quic "github.com/lucas-clemente/quic-go"
-	"github.com/mushroomsir/logger/alog"
 )
 
 // Setup a bare-bones TLS config for the server
@@ -47,8 +46,7 @@ func getConn(remoteAddr string) (quic.Session, error) {
 
 func transfer(src, dst io.ReadWriter) error {
 	go func() {
-		_, err := io.Copy(src, dst)
-		alog.Check(err)
+		io.Copy(src, dst)
 	}()
 	_, err := io.Copy(dst, src)
 	return err

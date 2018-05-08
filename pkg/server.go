@@ -62,11 +62,11 @@ func (c *Server) handleStream(stream quic.Stream) {
 	if alog.Check(err) {
 		return
 	}
+	alog.Infof("->: %s\n", addr)
 	conn, err := net.Dial("tcp", addr)
 	if alog.Check(err) {
 		return
 	}
-	alog.Infof("->: %s\n", addr)
 	err = transfer(stream, conn)
 	alog.Check(err)
 	conn.Close()

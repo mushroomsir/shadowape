@@ -66,19 +66,21 @@ func (c *Client) runHTTP() error {
 }
 
 func (c *Client) handleConn(conn net.Conn) {
-	alog.Info("LocalAddr", conn.LocalAddr(), "RemoteAddr", conn.RemoteAddr())
-	defer conn.Close()
 	for {
 		stream, err := c.session.OpenStreamSync()
 		if alog.Check(err) {
 			time.Sleep(time.Second)
 			c.session, err = getConn(c.config.Socks5ServerAddr)
-			alog.Check(err)
+			alog.Info("start reconnection")
+			if err != nil {
+				alog.Infof("reconnection failed:%v", err)
+			}
 			continue
 		}
-		err = transfer(conn, stream)
-		alog.Check(err)
+		transfer(conn, stream)
 		stream.Close()
+		conn.Close()
+		return
 	}
 }
 
