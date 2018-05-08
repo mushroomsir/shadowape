@@ -18,7 +18,7 @@ var (
 const (
 	socks5Version = 0x05
 	authNone      = 0x00
-	cmdTCPConnect = 0x01
+	socks5Connect = 0x01
 
 	atypeIPV4   = 0x01
 	atypeDomain = 0x03
@@ -63,7 +63,7 @@ func getAddr(rw io.ReadWriter) (string, error) {
 	)
 	// refer to getRequest in server.go for why set buffer size to 263
 	buf := make([]byte, 263)
-	n, err := io.ReadAtLeast(rw, buf, 5)
+	_, err := io.ReadAtLeast(rw, buf, 5)
 	if err != nil {
 		return "", err
 	}
@@ -71,8 +71,8 @@ func getAddr(rw io.ReadWriter) (string, error) {
 	if buf[idVer] != socks5Version {
 		return "", fmt.Errorf("socks5 read version error: %s", err.Error())
 	}
-	if buf[idCmd] != cmdTCPConnect {
-		return "", fmt.Errorf("socks5 unsupport cmd: %d", buf[0:n])
+	if buf[idCmd] != socks5Connect {
+		return "", fmt.Errorf("socks5 unsupport cmd: %d", buf[idCmd])
 	}
 	atype := buf[idType]
 	var host string

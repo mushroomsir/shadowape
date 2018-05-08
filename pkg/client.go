@@ -48,7 +48,7 @@ func NewClient(config *ClientConfig) (*Client, error) {
 
 // Run ...
 func (c *Client) Run() {
-	go c.runHTTP()
+	//go c.runHTTP()
 	for {
 		conn, err := c.socks5Lis.Accept()
 		if alog.Check(err) {
@@ -70,6 +70,7 @@ func (c *Client) handleConn(conn net.Conn) {
 		stream, err := c.session.OpenStreamSync()
 		if alog.Check(err) {
 			time.Sleep(time.Second)
+			c.session.Close(err)
 			c.session, err = getConn(c.config.Socks5ServerAddr)
 			alog.Info("start reconnection")
 			if err != nil {
@@ -77,9 +78,11 @@ func (c *Client) handleConn(conn net.Conn) {
 			}
 			continue
 		}
+		alog.Infof("%s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), stream.StreamID())
 		transfer(conn, stream)
 		stream.Close()
 		conn.Close()
+		alog.Infof("close streamID: %v", stream.StreamID())
 		return
 	}
 }

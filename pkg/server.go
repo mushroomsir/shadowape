@@ -36,7 +36,7 @@ func (c *Server) Run() {
 	for {
 		conn, err := c.lis.Accept()
 		alog.Check(err)
-		alog.Infof("new conntion : %s\n", conn.RemoteAddr())
+		alog.Infof("new conntion: %s", conn.RemoteAddr())
 		go c.handleConn(conn)
 	}
 }
@@ -45,14 +45,15 @@ func (c *Server) handleConn(conn quic.Session) {
 	for {
 		stream, err := conn.AcceptStream()
 		if alog.Check(err) {
+			alog.Infof("close conntion: %s", conn.RemoteAddr())
 			conn.Close(err)
 			return
 		}
-		go c.handleStream(stream)
+		go c.handleStream(stream, conn.RemoteAddr().String())
 	}
 }
 
-func (c *Server) handleStream(stream quic.Stream) {
+func (c *Server) handleStream(stream quic.Stream, remoteAddr string) {
 	defer stream.Close()
 	err := handshake(stream)
 	if alog.Check(err) {
@@ -62,7 +63,7 @@ func (c *Server) handleStream(stream quic.Stream) {
 	if alog.Check(err) {
 		return
 	}
-	alog.Infof("->: %s\n", addr)
+	alog.Infof("new streamID: %v, %s -> %s", stream.StreamID(), remoteAddr, addr)
 	conn, err := net.Dial("tcp", addr)
 	if alog.Check(err) {
 		return
@@ -70,4 +71,5 @@ func (c *Server) handleStream(stream quic.Stream) {
 	err = transfer(stream, conn)
 	alog.Check(err)
 	conn.Close()
+	alog.Infof("close streamID: %v, %s -> %s", stream.StreamID(), remoteAddr, addr)
 }

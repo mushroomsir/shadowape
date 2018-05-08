@@ -46,9 +46,9 @@ func getConn(remoteAddr string) (quic.Session, error) {
 
 func transfer(src, dst io.ReadWriter) error {
 	go func() {
-		io.Copy(src, dst)
+		io.Copy(dst, src)
 	}()
-	_, err := io.Copy(dst, src)
+	_, err := io.Copy(src, dst)
 	return err
 }
 

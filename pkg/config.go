@@ -5,10 +5,13 @@ import (
 	"io/ioutil"
 )
 
+// ServerConfig ...
 type ServerConfig struct {
 	// ServerAddr
 	ServerAddr string `json:"server_addr"`
 }
+
+// ClientConfig ...
 type ClientConfig struct {
 	// Socks5ListenAddr ...
 	Socks5ListenAddr string `json:"socks5_listen_addr"`
