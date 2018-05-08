@@ -66,6 +66,7 @@ func (c *Client) runHTTP() error {
 }
 
 func (c *Client) handleConn(conn net.Conn) {
+	alog.Info("LocalAddr", conn.LocalAddr(), "RemoteAddr", conn.RemoteAddr())
 	defer conn.Close()
 	for {
 		stream, err := c.session.OpenStreamSync()

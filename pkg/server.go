@@ -62,10 +62,6 @@ func (c *Server) handleStream(stream quic.Stream) {
 	if alog.Check(err) {
 		return
 	}
-	err = ok(stream)
-	if alog.Check(err) {
-		return
-	}
 	conn, err := net.Dial("tcp", addr)
 	if alog.Check(err) {
 		return
