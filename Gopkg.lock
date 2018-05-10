@@ -20,10 +20,10 @@
   revision = "198357931e6129b810c9c77c12e0dd754846170c"
 
 [[projects]]
-  name = "github.com/elazarl/goproxy"
-  packages = ["."]
-  revision = "0a5b8bdb09049ae4ae68e75437ded0b7a2e324e3"
-  version = "v1.0"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -79,6 +79,21 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "require"
+  ]
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
@@ -105,6 +120,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e6e9566d8d4e52ed8cb6a38d7c266ecf2243894271910cb7cb3ffc3871b4c69d"
+  inputs-digest = "493c0883081fd11bae0170cc1fbf6761347dc2259a12a29f5b1c7760d0f63ff7"
   solver-name = "gps-cdcl"
   solver-version = 1

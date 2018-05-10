@@ -3,14 +3,10 @@ package pkg
 import (
 	"errors"
 	"net"
-	"net/http"
 	"time"
 
-	"github.com/elazarl/goproxy"
-	"github.com/mushroomsir/logger/alog"
-	xproxy "golang.org/x/net/proxy"
-
 	"github.com/lucas-clemente/quic-go"
+	"github.com/mushroomsir/logger/alog"
 )
 
 // Client ...
@@ -18,6 +14,7 @@ type Client struct {
 	session            quic.Session
 	socks5Lis, httpLis net.Listener
 	config             *ClientConfig
+	proxyhttp          *ProxyHTTPServer
 }
 
 // NewClient ...
@@ -33,14 +30,14 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	httpLis, err := net.Listen("tcp", config.HTTPListenAddr)
+	proxyhttp, err := NewProxyHTTPServer(config, session)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
 		session:   session,
 		socks5Lis: socks5Lis,
-		httpLis:   httpLis,
+		proxyhttp: proxyhttp,
 		config:    config,
 	}
 	return c, nil
@@ -48,7 +45,7 @@ func NewClient(config *ClientConfig) (*Client, error) {
 
 // Run ...
 func (c *Client) Run() {
-	//go c.runHTTP()
+	go c.proxyhttp.runhttp()
 	for {
 		conn, err := c.socks5Lis.Accept()
 		if alog.Check(err) {
@@ -56,13 +53,6 @@ func (c *Client) Run() {
 		}
 		go c.handleConn(conn)
 	}
-}
-func (c *Client) runHTTP() error {
-	proxy, err := c.httpBridge()
-	if alog.Check(err) {
-		return err
-	}
-	return http.Serve(c.httpLis, proxy)
 }
 
 func (c *Client) handleConn(conn net.Conn) {
@@ -78,21 +68,11 @@ func (c *Client) handleConn(conn net.Conn) {
 			}
 			continue
 		}
-		alog.Infof("%s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), stream.StreamID())
+		alog.Infof("%s -> %s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), c.config.Socks5ServerAddr, stream.StreamID())
 		transfer(conn, stream)
 		stream.Close()
 		conn.Close()
 		alog.Infof("close streamID: %v", stream.StreamID())
 		return
 	}
-}
-
-func (c *Client) httpBridge() (*goproxy.ProxyHttpServer, error) {
-	socks5Dailer, err := xproxy.SOCKS5("tcp", c.config.Socks5ListenAddr, nil, &quicForward{session: c.session})
-	if alog.Check(err) {
-		return nil, err
-	}
-	httpProxy := goproxy.NewProxyHttpServer()
-	httpProxy.ConnectDial = socks5Dailer.Dial
-	return httpProxy, nil
 }

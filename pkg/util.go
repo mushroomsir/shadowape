@@ -37,7 +37,6 @@ func generateTLSConfig() *tls.Config {
 
 func getConn(remoteAddr string) (quic.Session, error) {
 	return quic.DialAddr(remoteAddr, &tls.Config{InsecureSkipVerify: true}, &quic.Config{
-		MaxIncomingStreams:                    65535,
 		IdleTimeout:                           time.Hour,
 		MaxReceiveStreamFlowControlWindow:     100 * (1 << 20),
 		MaxReceiveConnectionFlowControlWindow: 1000 * (1 << 20),
@@ -55,6 +54,7 @@ func transfer(src, dst io.ReadWriter) error {
 type fakeConn struct {
 	session quic.Session
 	quic.Stream
+	realRemoteAddr net.Addr
 }
 
 func (s *fakeConn) LocalAddr() net.Addr {
@@ -74,8 +74,13 @@ func (f *quicForward) Dial(network, addr string) (c net.Conn, err error) {
 	if err != nil {
 		return nil, err
 	}
+	tcpAddr, err := net.ResolveTCPAddr(network, addr)
+	if err != nil {
+		return nil, err
+	}
 	return &fakeConn{
-		session: f.session,
-		Stream:  stream,
+		session:        f.session,
+		Stream:         stream,
+		realRemoteAddr: tcpAddr,
 	}, nil
 }

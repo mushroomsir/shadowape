@@ -17,7 +17,6 @@ type Server struct {
 // NewServer ...
 func NewServer(config *ServerConfig) (*Server, error) {
 	lis, err := quic.ListenAddr(config.ServerAddr, generateTLSConfig(), &quic.Config{
-		MaxIncomingStreams:                    65535,
 		IdleTimeout:                           time.Hour,
 		MaxReceiveStreamFlowControlWindow:     100 * (1 << 20),
 		MaxReceiveConnectionFlowControlWindow: 1000 * (1 << 20),
