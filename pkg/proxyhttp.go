@@ -4,8 +4,9 @@ import (
 	"io"
 	"log"
 	"net/http"
-
 	"time"
+
+	"github.com/mushroomsir/logger/alog"
 
 	quic "github.com/lucas-clemente/quic-go"
 	xproxy "golang.org/x/net/proxy"
@@ -16,6 +17,7 @@ type ProxyHTTPServer struct {
 	config        *ClientConfig
 	session       quic.Session
 	httpTransport *http.Transport
+	dialer        xproxy.Dialer
 }
 
 // NewProxyHTTPServer ...
@@ -35,10 +37,12 @@ func NewProxyHTTPServer(config *ClientConfig, session quic.Session) (*ProxyHTTPS
 		config:        config,
 		session:       session,
 		httpTransport: httpTransport,
+		dialer:        dialer,
 	}, nil
 }
 
 func (p *ProxyHTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	alog.Infof("HTTP(%s): %s -> [%s->%s] -> %s -> %s", r.Method, r.RemoteAddr, p.config.HTTPListenAddr, p.config.Socks5ListenAddr, p.config.Socks5ServerAddr, r.Host)
 	if r.Method == http.MethodConnect {
 		p.handleTunneling(w, r)
 	} else {
@@ -56,12 +60,7 @@ func (p *ProxyHTTPServer) runhttp() {
 
 // handleTunneling ...
 func (p *ProxyHTTPServer) handleTunneling(w http.ResponseWriter, r *http.Request) {
-	dialer, err := xproxy.SOCKS5("tcp", p.config.Socks5ListenAddr, nil, &quicForward{session: p.session})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		return
-	}
-	destConn, err := dialer.Dial("tcp", r.Host)
+	destConn, err := p.dialer.Dial("tcp", r.Host)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return

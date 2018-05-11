@@ -11,9 +11,15 @@ func main() {
 	var configFile string
 	flag.StringVar(&configFile, "c", "config.json", "config file")
 	flag.Parse()
-	config, err := pkg.ParseConfig(configFile)
-	if alog.Check(err) {
-		return
+	var config *pkg.Config
+	var err error
+	if configFile == "" {
+		config = &pkg.Config{ServerConfig: &pkg.ServerConfig{ServerAddr: "0.0.0.0:8060"}}
+	} else {
+		config, err = pkg.ParseConfig(configFile)
+		if alog.Check(err) {
+			return
+		}
 	}
 	alog.Info(*config)
 	if config.ClientConfig != nil {

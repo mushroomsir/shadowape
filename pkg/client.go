@@ -72,7 +72,6 @@ func (c *Client) handleConn(conn net.Conn) {
 		transfer(conn, stream)
 		stream.Close()
 		conn.Close()
-		alog.Infof("close streamID: %v", stream.StreamID())
 		return
 	}
 }
