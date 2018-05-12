@@ -3,7 +3,7 @@ package pkg
 import (
 	"errors"
 	"net"
-	"time"
+	"sync"
 
 	"github.com/lucas-clemente/quic-go"
 	"github.com/mushroomsir/logger/alog"
@@ -15,6 +15,7 @@ type Client struct {
 	socks5Lis, httpLis net.Listener
 	config             *ClientConfig
 	proxyhttp          *ProxyHTTPServer
+	lock               sync.Mutex
 }
 
 // NewClient ...
@@ -30,17 +31,13 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	proxyhttp, err := NewProxyHTTPServer(config, session)
-	if err != nil {
-		return nil, err
-	}
 	c := &Client{
 		session:   session,
 		socks5Lis: socks5Lis,
-		proxyhttp: proxyhttp,
 		config:    config,
 	}
-	return c, nil
+	c.proxyhttp, err = NewProxyHTTPServer(config, &quicForward{session: c.getSession})
+	return c, err
 }
 
 // Run ...
@@ -57,12 +54,10 @@ func (c *Client) Run() {
 
 func (c *Client) handleConn(conn net.Conn) {
 	for {
-		stream, err := c.session.OpenStreamSync()
+		stream, err := c.getSession().OpenStreamSync()
 		if alog.Check(err) {
-			time.Sleep(time.Second)
-			c.session.Close(err)
-			c.session, err = getConn(c.config.Socks5ServerAddr)
 			alog.Info("start reconnection")
+			err = c.genNewSession()
 			if err != nil {
 				alog.Infof("reconnection failed:%v", err)
 			}
@@ -74,4 +69,23 @@ func (c *Client) handleConn(conn net.Conn) {
 		conn.Close()
 		return
 	}
+}
+
+func (c *Client) getSession() quic.Session {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	return c.session
+}
+
+func (c *Client) setSession(session quic.Session) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	c.session = session
+}
+func (c *Client) genNewSession() (err error) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	c.session.Close(ErrReconnection)
+	c.session, err = getConn(c.config.Socks5ServerAddr)
+	return
 }

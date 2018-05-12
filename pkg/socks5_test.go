@@ -10,9 +10,8 @@ import (
 
 func TestSocks5(t *testing.T) {
 	require := require.New(t)
-	addr := ":8020"
+	addr := ":7000"
 	reqURL := "127.0.0.1:80"
-
 	go func() {
 		dailer, err := xproxy.SOCKS5("tcp", addr, nil, &xproxy.Direct)
 		require.Nil(err)

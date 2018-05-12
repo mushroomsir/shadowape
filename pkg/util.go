@@ -52,35 +52,31 @@ func transfer(src, dst io.ReadWriter) error {
 }
 
 type fakeConn struct {
-	session quic.Session
+	session getSession
 	quic.Stream
-	realRemoteAddr net.Addr
 }
 
 func (s *fakeConn) LocalAddr() net.Addr {
-	return s.session.LocalAddr()
+	return s.session().LocalAddr()
 }
 
 func (s *fakeConn) RemoteAddr() net.Addr {
-	return s.session.RemoteAddr()
+	return s.session().RemoteAddr()
 }
 
+type getSession func() quic.Session
+
 type quicForward struct {
-	session quic.Session
+	session getSession
 }
 
 func (f *quicForward) Dial(network, addr string) (c net.Conn, err error) {
-	stream, err := f.session.OpenStreamSync()
-	if err != nil {
-		return nil, err
-	}
-	tcpAddr, err := net.ResolveTCPAddr(network, addr)
+	stream, err := f.session().OpenStreamSync()
 	if err != nil {
 		return nil, err
 	}
 	return &fakeConn{
-		session:        f.session,
-		Stream:         stream,
-		realRemoteAddr: tcpAddr,
+		session: f.session,
+		Stream:  stream,
 	}, nil
 }

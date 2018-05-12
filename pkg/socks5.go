@@ -89,7 +89,7 @@ func getAddr(rw io.ReadWriter) (string, error) {
 	if err != nil {
 		return emptyString, err
 	}
-	host := net.IP(buf[:addrLen]).String()
+	host := string(buf[:addrLen])
 	port := binary.BigEndian.Uint16(buf[addrLen : addrLen+2])
 	host = net.JoinHostPort(host, strconv.Itoa(int(port)))
 	_, err = rw.Write([]byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x08, 0x43})

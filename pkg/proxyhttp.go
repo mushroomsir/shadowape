@@ -21,8 +21,8 @@ type ProxyHTTPServer struct {
 }
 
 // NewProxyHTTPServer ...
-func NewProxyHTTPServer(config *ClientConfig, session quic.Session) (*ProxyHTTPServer, error) {
-	dialer, err := xproxy.SOCKS5("tcp", config.Socks5ListenAddr, nil, &quicForward{session: session})
+func NewProxyHTTPServer(config *ClientConfig, forward *quicForward) (*ProxyHTTPServer, error) {
+	dialer, err := xproxy.SOCKS5("tcp", config.Socks5ListenAddr, nil, forward)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,6 @@ func NewProxyHTTPServer(config *ClientConfig, session quic.Session) (*ProxyHTTPS
 	httpTransport.Dial = dialer.Dial
 	return &ProxyHTTPServer{
 		config:        config,
-		session:       session,
 		httpTransport: httpTransport,
 		dialer:        dialer,
 	}, nil
@@ -84,7 +83,6 @@ func (p *ProxyHTTPServer) handleHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	defer resp.Body.Close()
-	w.Header().Set("shadowape-proxy", "true")
 	copyHeader(w.Header(), resp.Header)
 	w.WriteHeader(resp.StatusCode)
 	io.Copy(w, resp.Body)
