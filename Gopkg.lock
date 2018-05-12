@@ -70,13 +70,13 @@
   revision = "d2f86524cced5186554df90d92529757d22c1cb6"
 
 [[projects]]
+  branch = "master"
   name = "github.com/mushroomsir/logger"
   packages = [
     "alog",
     "pkg"
   ]
-  revision = "86df9db80c274dc80f4a8568ee20117f415a3a53"
-  version = "v1.1.0"
+  revision = "0f28a206123837e1b77adfd9afa523cee0338242"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -120,6 +120,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "493c0883081fd11bae0170cc1fbf6761347dc2259a12a29f5b1c7760d0f63ff7"
+  inputs-digest = "43def7c54508a51fe294d2e29717c88417dcaf80d911e42e7ce52b5236e449f4"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -25,10 +25,17 @@ func TestProxy(t *testing.T) {
 		Proxy:           http.ProxyURL(proxyURL),
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}}
-	resp, err := myClient.Get("http://www.baidu.com")
+	resp, err := myClient.Get("http://www.facebook.com")
 	require.Nil(err)
 	require.Equal(200, resp.StatusCode)
 	by, err := ioutil.ReadAll(resp.Body)
+	require.Nil(err)
+	require.NotEmpty(string(by))
+
+	resp, err = myClient.Get("https://www.google.com/")
+	require.Nil(err)
+	require.Equal(200, resp.StatusCode)
+	by, err = ioutil.ReadAll(resp.Body)
 	require.Nil(err)
 	require.NotEmpty(string(by))
 }

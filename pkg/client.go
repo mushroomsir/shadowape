@@ -63,7 +63,7 @@ func (c *Client) handleConn(conn net.Conn) {
 			}
 			continue
 		}
-		alog.Infof("%s -> %s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), c.config.Socks5ServerAddr, stream.StreamID())
+		alog.Infof("%s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), stream.StreamID())
 		transfer(conn, stream)
 		stream.Close()
 		conn.Close()

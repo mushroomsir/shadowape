@@ -1,21 +1,18 @@
+sudo: false
 language: go
-
-matrix:
-  include:
-    - go: 1.10.x
-    - master
-
+go:
+  - 1.10.x
 before_install:
   - go get -t -v ./...
   - go get github.com/modocache/gover
   - go get github.com/mattn/goveralls
 
 script:
-  - go test -v ./...
-  - go test -coverprofile=shadowape.coverprofile
+  - go test -v -coverprofile=shadowape.coverprofile ./pkg
   - gover
   - goveralls -coverprofile=shadowape.coverprofile -service=travis-ci
 
 notifications:
   email:
     on_success: never
+    on_failure: never
