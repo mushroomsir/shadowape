@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"sync"
+	"time"
 
 	"github.com/lucas-clemente/quic-go"
 	"github.com/mushroomsir/logger/alog"
@@ -56,11 +57,8 @@ func (c *Client) handleConn(conn net.Conn) {
 	for {
 		stream, err := c.getSession().OpenStreamSync()
 		if alog.Check(err) {
-			alog.Info("start reconnection")
-			err = c.genNewSession()
-			if err != nil {
-				alog.Infof("reconnection failed:%v", err)
-			}
+			time.Sleep(time.Second)
+			alog.Info("start reconnection:", c.genNewSession())
 			continue
 		}
 		alog.Infof("%s -> %s, streamID: %v", conn.RemoteAddr().String(), c.session.RemoteAddr().String(), stream.StreamID())
@@ -82,10 +80,14 @@ func (c *Client) setSession(session quic.Session) {
 	defer c.lock.Unlock()
 	c.session = session
 }
-func (c *Client) genNewSession() (err error) {
+func (c *Client) genNewSession() error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.session.Close(ErrReconnection)
-	c.session, err = getConn(c.config.Socks5ServerAddr)
-	return
+	session, err := getConn(c.config.Socks5ServerAddr)
+	if alog.Check(err) {
+		return err
+	}
+	c.session = session
+	return nil
 }
