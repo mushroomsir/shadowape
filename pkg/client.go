@@ -26,7 +26,7 @@ type Client struct {
 // NewClient ...
 func NewClient(config *ClientConfig) (*Client, error) {
 	var err error
-	if config.Socks5ServerAddr == "" {
+	if config == nil || config.Socks5ServerAddr == "" {
 		return nil, errors.New("the socks5_Server_addr is empty")
 	}
 	c := &Client{config: config}
@@ -41,11 +41,11 @@ func NewClient(config *ClientConfig) (*Client, error) {
 		caCertPool.AppendCertsFromPEM(rootPEM)
 		c.tlsConfig = &tls.Config{RootCAs: caCertPool}
 	}
-	c.session, err = getConn(config.Socks5ServerAddr, c.tlsConfig)
+	c.socks5Lis, err = net.Listen("tcp", config.Socks5ListenAddr)
 	if err != nil {
 		return nil, err
 	}
-	c.socks5Lis, err = net.Listen("tcp", config.Socks5ListenAddr)
+	c.session, err = getConn(config.Socks5ServerAddr, c.tlsConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +58,9 @@ func (c *Client) Run() {
 	go c.proxyhttp.runhttp()
 	for {
 		conn, err := c.socks5Lis.Accept()
-		if alog.Check(err) {
-			continue
+		if !alog.Check(err) {
+			go c.handleConn(conn)
 		}
-		go c.handleConn(conn)
 	}
 }
 
