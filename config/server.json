@@ -1,5 +1,7 @@
 {
     "server_config": {
-        "server_addr": "0.0.0.0:8060"
+        "server_addr": "0.0.0.0:8060",
+        "cert_file": "testdata/leaf.pem",
+        "key_file": "testdata/leaf.key"
     }
 }

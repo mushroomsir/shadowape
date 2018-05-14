@@ -17,6 +17,7 @@ func TestProxy(t *testing.T) {
 	config, err := ParseConfig("../config/client.json")
 	require.Nil(err)
 	client, err := NewClient(config.ClientConfig)
+	require.Nil(err)
 	go client.Run()
 
 	proxyURL, err := url.Parse(fmt.Sprintf("http://%v", config.ClientConfig.HTTPListenAddr))

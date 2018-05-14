@@ -20,6 +20,12 @@
   revision = "198357931e6129b810c9c77c12e0dd754846170c"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/cheekybits/genny"
+  packages = ["generic"]
+  revision = "9127e812e1e9e501ce899a18121d316ecb52e4ba"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -42,11 +48,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/lucas-clemente/fnv128a"
-  packages = ["."]
-  revision = "393af48d391698c6ae4219566bfbdfef67269997"
-
-[[projects]]
   name = "github.com/lucas-clemente/quic-go"
   packages = [
     ".",
@@ -60,8 +61,7 @@
     "internal/wire",
     "qerr"
   ]
-  revision = "30851b9a3b4e958490b476fe72adafa67641361a"
-  version = "v0.7.0"
+  revision = "407a563c73ad24115f0ac1e7df5f6097353642db"
 
 [[projects]]
   branch = "master"
@@ -110,6 +110,7 @@
     "proxy"
   ]
   revision = "f73e4c9ed3b7ebdd5f699a16a880c2b1994e50dd"
+  source = "github.com/golang/net"
 
 [[projects]]
   branch = "master"
@@ -120,6 +121,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "43def7c54508a51fe294d2e29717c88417dcaf80d911e42e7ce52b5236e449f4"
+  inputs-digest = "1a076716411bb85a788144bfbba49907f403c224e5da9d3257b9b3a536e56227"
   solver-name = "gps-cdcl"
   solver-version = 1

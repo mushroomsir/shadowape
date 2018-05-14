@@ -9,7 +9,9 @@
 ```json
 {
     "server_config": {
-        "server_addr": "0.0.0.0:8060"
+        "server_addr": "0.0.0.0:8060",
+        "cert_file": "",
+        "key_file": ""
     }
 }
 ```
@@ -22,7 +24,8 @@ go run main.go -c server.json
     "client_config": {
         "http_listen_addr": "0.0.0.0:8010",
         "socks5_listen_addr": "0.0.0.0:8020",
-        "socks5_Server_addr": "127.0.0.1:8060"
+        "socks5_Server_addr": "127.0.0.1:8060",
+        "root_cert_file": "testdata/root.pem"
     }
 }
 ```

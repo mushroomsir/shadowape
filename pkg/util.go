@@ -35,8 +35,8 @@ func generateTLSConfig() *tls.Config {
 	return &tls.Config{Certificates: []tls.Certificate{tlsCert}}
 }
 
-func getConn(remoteAddr string) (quic.Session, error) {
-	return quic.DialAddr(remoteAddr, &tls.Config{InsecureSkipVerify: true}, &quic.Config{
+func getConn(remoteAddr string, tlsConfig *tls.Config) (quic.Session, error) {
+	return quic.DialAddr(remoteAddr, tlsConfig, &quic.Config{
 		IdleTimeout:                           time.Hour,
 		MaxReceiveStreamFlowControlWindow:     100 * (1 << 20),
 		MaxReceiveConnectionFlowControlWindow: 1000 * (1 << 20),

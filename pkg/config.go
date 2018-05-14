@@ -9,6 +9,10 @@ import (
 type ServerConfig struct {
 	// ServerAddr
 	ServerAddr string `json:"server_addr"`
+	// CertFile
+	CertFile string `json:"cert_file"`
+	// KeyFile
+	KeyFile string `json:"key_file"`
 }
 
 // ClientConfig ...
@@ -19,6 +23,8 @@ type ClientConfig struct {
 	HTTPListenAddr string `json:"http_listen_addr"`
 	// Socks5ServerAddr ...
 	Socks5ServerAddr string `json:"socks5_Server_addr"`
+	// CertFile
+	CertFile string `json:"root_cert_file"`
 }
 
 // Config ...

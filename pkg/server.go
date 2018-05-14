@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"crypto/tls"
 	"net"
 	"time"
 
@@ -16,7 +17,17 @@ type Server struct {
 
 // NewServer ...
 func NewServer(config *ServerConfig) (*Server, error) {
-	lis, err := quic.ListenAddr(config.ServerAddr, generateTLSConfig(), &quic.Config{
+	var tlsConfig *tls.Config
+	if config.CertFile != "" && config.KeyFile != "" {
+		cer, err := tls.LoadX509KeyPair(config.CertFile, config.KeyFile)
+		if alog.Check(err) {
+			return nil, err
+		}
+		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cer}}
+	} else {
+		tlsConfig = generateTLSConfig()
+	}
+	lis, err := quic.ListenAddr(config.ServerAddr, tlsConfig, &quic.Config{
 		IdleTimeout:                           time.Hour,
 		MaxReceiveStreamFlowControlWindow:     100 * (1 << 20),
 		MaxReceiveConnectionFlowControlWindow: 1000 * (1 << 20),

@@ -21,8 +21,9 @@
 
 
 [[constraint]]
+  branch = "master"
   name = "github.com/lucas-clemente/quic-go"
-  version = "0.7.0"
+ 
 
 [[constraint]]
   branch = "master"
@@ -31,3 +32,4 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/net"
+  source = "github.com/golang/net"
