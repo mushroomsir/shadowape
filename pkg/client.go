@@ -49,13 +49,17 @@ func NewClient(config *ClientConfig) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.proxyhttp, err = NewProxyHTTPServer(config, &quicForward{session: c.getSession})
+	if c.config.HTTPListenAddr != "" {
+		c.proxyhttp, err = NewProxyHTTPServer(config, &quicForward{session: c.getSession})
+	}
 	return c, err
 }
 
 // Run ...
 func (c *Client) Run() {
-	go c.proxyhttp.runhttp()
+	if c.proxyhttp != nil {
+		go c.proxyhttp.runhttp()
+	}
 	for {
 		conn, err := c.socks5Lis.Accept()
 		if !alog.Check(err) {

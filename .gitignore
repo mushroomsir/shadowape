@@ -6,3 +6,6 @@ make.ps1
 .vscode
 test.json
 shadowape
+*.exe~
+*.exe
+shadowape-linux
